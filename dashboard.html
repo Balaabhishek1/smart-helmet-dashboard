@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Helmet Dashboard | Telemetry</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-mesh"></div>
+    <div class="blur-overlay"></div>
+
+    <!-- Alert Modal (Hidden by default) -->
+    <div id="crashAlertModal" class="alert-modal hidden">
+        <div class="modal-content danger-glow">
+            <i class="fa-solid fa-triangle-exclamation alert-icon pulse-fast"></i>
+            <h2>CRASH DETECTED</h2>
+            <p>High impact registered on Rider-X89 at <span id="crashTime">--:--</span>.</p>
+            <p><i class="fa-solid fa-location-dot"></i> <span id="crashLocation">34.0522° N, 118.2437° W</span></p>
+            <div class="modal-actions">
+                <button class="btn-danger" id="dispatchBtn">Dispatch Emergency Services</button>
+                <button class="btn-secondary" id="dismissAlertBtn">False Alarm</button>
+            </div>
+            <div class="auto-dispatch-timer">
+                Auto-contacting Emergency Contacts in <span id="countdown">10</span>s
+            </div>
+        </div>
+    </div>
+
+    <!-- Geo-fence Alert (Toast) -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <nav class="sidebar">
+        <div class="logo-area">
+            <i class="fa-solid fa-motorcycle logo-icon"></i>
+            <h2>Aero<span>Vision</span></h2>
+        </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#"><i class="fa-solid fa-gauge-high"></i> Telemetry</a></li>
+            <li><a href="#"><i class="fa-solid fa-map-location-dot"></i> Navigation</a></li>
+            <li><a href="#"><i class="fa-solid fa-video"></i> Cameras</a></li>
+            <li><a href="#"><i class="fa-solid fa-helmet-safety"></i> Diagnostics</a></li>
+            <li><a href="#"><i class="fa-solid fa-sliders"></i> Settings</a></li>
+        </ul>
+        <div class="nav-footer">
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Rider+One&background=00d2ff&color=fff" alt="User Profile">
+                <div class="user-info">
+                    <p class="user-name">Rider-X89</p>
+                    <p class="user-status"><span class="status-dot"></span> Online</p>
+                </div>
+            </div>
+            <a href="index.html" class="logout-btn"><i class="fa-solid fa-power-off"></i></a>
+        </div>
+    </nav>
+
+    <main class="dashboard-content">
+        <header class="topbar">
+            <div class="helmet-info">
+                <h1>Live Telemetry Link</h1>
+                <p>Helmet ID: <span class="highlight">HMT-8022-ALPHA</span> | Timestamp: <span id="liveTimestamp"
+                        class="timestamp">00:00:00</span></p>
+            </div>
+            <div class="system-metrics">
+                <div class="metric-pill device-status connected" id="connectionStatus">
+                    <i class="fa-solid fa-link"></i>
+                    <span>Connected</span>
+                </div>
+                <div class="metric-pill worn-status true" id="wornStatus">
+                    <i class="fa-solid fa-head-side-mask"></i>
+                    <span>Helmet Worn</span>
+                </div>
+                <div class="metric-pill">
+                    <i class="fa-solid fa-battery-three-quarters" style="color: #10b981;"></i>
+                    <span>84%</span>
+                </div>
+                <button class="action-btn icon-only" aria-label="Notifications" id="testCrashBtn" title="Test Alert"><i
+                        class="fa-regular fa-bell"></i></button>
+            </div>
+        </header>
+
+        <div class="grid-layout">
+            <!-- Speedometer Card -->
+            <div class="card speed-card neon-border">
+                <div class="card-header">
+                    <h3>Current Speed</h3>
+                    <i class="fa-solid fa-bolt icon-muted"></i>
+                </div>
+                <div class="speedometer-container">
+                    <div class="speed-value">
+                        <span id="speedValue">65</span>
+                        <span class="speed-unit">km/h</span>
+                    </div>
+                    <svg class="speed-ring" viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+                        <circle class="ring-fill" cx="50" cy="50" r="45" id="speedRingFill"></circle>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Route & Geo-fence -->
+            <div class="card map-card span-2">
+                <div class="card-header">
+                    <h3>Live Tracking & Route</h3>
+                    <div class="card-actions">
+                        <button class="mini-btn active">Live Map</button>
+                        <button class="mini-btn">Route History</button>
+                    </div>
+                </div>
+                <div class="mock-map">
+                    <div class="map-grid"></div>
+                    <!-- Geo Fence Visualization -->
+                    <div class="geo-fence-circle"></div>
+                    <div class="route-line"></div>
+                    <div class="map-marker pulse-marker" id="liveMarker">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </div>
+                    <div class="location-overlay flex-row">
+                        <div class="gps-coords">
+                            <p class="small-text">GPS Location</p>
+                            <p><i class="fa-solid fa-satellite-dish icon-blue"></i> <span>34.0522° N, 118.2437° W</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings & Actions -->
+            <div class="card settings-card">
+                <div class="card-header">
+                    <h3>System Controls</h3>
+                    <i class="fa-solid fa-sliders icon-muted"></i>
+                </div>
+                <div class="control-list">
+                    <div class="control-item">
+                        <div class="control-info">
+                            <i class="fa-brands fa-bluetooth-b icon-blue"></i>
+                            <div>
+                                <span>Bluetooth Audio</span>
+                                <p class="small-text">Connected to iPhone</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-info">
+                            <i class="fa-solid fa-video icon-red"></i>
+                            <div>
+                                <span>Dashcam Recording</span>
+                                <p class="small-text">Looping (SD: 64GB Free)</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-info">
+                            <i class="fa-solid fa-bell icon-orange"></i>
+                            <div>
+                                <span>Geo-fence Alerts</span>
+                                <p class="small-text">Radius: 50km</p>
+                            </div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked id="geoFenceToggle">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Helmet Diagnostics & Safety -->
+            <div class="card diagnostics-card span-2">
+                <div class="card-header">
+                    <h3>Safety & Diagnostics</h3>
+                    <div class="card-actions">
+                        <button class="mini-btn text-accent"><i class="fa-solid fa-rotate"></i> Check Firmware</button>
+                    </div>
+                </div>
+                <div class="safety-grid">
+                    <!-- Left Column -->
+                    <div class="diag-list">
+                        <div class="diag-item">
+                            <div class="diag-info">
+                                <span>Firmware Version</span>
+                                <span class="status-badge info">v2.4.1 (Up to date)</span>
+                            </div>
+                        </div>
+                        <div class="diag-item">
+                            <div class="diag-info">
+                                <span>Impact Sensors (G-Force)</span>
+                                <span class="status-text accent">0.2 G</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="fill" style="width: 10%; background: var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div class="diag-item">
+                            <div class="diag-info">
+                                <span>Main Visor HUD</span>
+                                <span class="status-badge success">Online</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="fill" style="width: 100%; background: var(--success);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column (Contacts ) -->
+                    <div class="emergency-contacts">
+                        <h4>Emergency Contacts</h4>
+                        <div class="contact-list">
+                            <div class="contact-card">
+                                <div class="c-avatar">J</div>
+                                <div class="c-info">
+                                    <span class="c-name">Joji Prasad (Father)</span>
+                                    <span class="c-num">+91 7330762898</span>
+                                </div>
+                                <button class="call-btn"><i class="fa-solid fa-phone"></i></button>
+                            </div>
+                            <div class="contact-card">
+                                <div class="c-avatar sr">911</div>
+                                <div class="c-info">
+                                    <span class="c-name">Emergency Services</span>
+                                    <span class="c-num">Auto-dispatch enabled</span>
+                                </div>
+                                <i class="fa-solid fa-shield-halved icon-red shield-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

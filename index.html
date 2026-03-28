@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroVision | Smart Helmet Login</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100%;
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 2.5rem;
+        }
+
+        .login-logo i {
+            display: block;
+            margin: 0 auto 1rem;
+            font-size: 3rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .login-logo h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+        }
+
+        .login-logo h1 span {
+            color: var(--primary);
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        .login-footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-mesh"></div>
+    <div class="blur-overlay"></div>
+
+    <div class="login-container">
+        <div class="card login-card neon-border">
+            <div class="login-logo">
+                <i class="fa-solid fa-motorcycle"></i>
+                <h1>Aero<span>Vision</span></h1>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Pilot ID</label>
+                    <input type="text" id="username" placeholder="Enter Pilot ID (e.g., Rider-X89)" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Encrypted Key</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn">Initialize Link</button>
+            </form>
+            <div class="login-footer">
+                <p>Telemetry access restricted to Authorized Riders only.</p>
+                <p><a href="#">Request Command Access</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Redirect to dashboard (frontend only logic)
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+
+</html>
